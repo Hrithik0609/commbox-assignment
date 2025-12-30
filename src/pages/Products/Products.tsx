@@ -1,14 +1,45 @@
 import { useState } from "react";
+import { useProducts } from "../../api/useProducts";
 import Pagination from "../../components/Pagination";
 import ProductCard from "../../components/ProductCard";
-import SelectInput from "../../components/SelectInput";
-import { useProducts } from "../../api/useProducts";
+import CustomSelect from "../../components/CustomSelect";
 
 const initialParams = {
     search: '',
-    category: '',
-    sortBy: ''
+    category: 'All Categories',
+    sortBy: 'Price: Low to High'
 }
+
+const categories = [
+    {
+        label: 'All Categories',
+        value: 'All Categories'
+    },
+    {
+        label: 'Electronics',
+        value: 'Electronics'
+    },
+    {
+        label: 'Furniture',
+        value: 'Furniture'
+    },
+    {
+        label: 'Home & Kitchen',
+        value: 'Home & Kitchen'
+    },
+    {
+        label: 'Photography',
+        value: 'Photography'
+    },
+    {
+        label: 'Sports',
+        value: 'Sports'
+    },
+    {
+        label: 'Bags',
+        value: 'Bags'
+    },
+]
 
 const sortOptions = [
     {
@@ -75,9 +106,9 @@ const Products = () => {
 
                 <div className="grid lg:grid-cols-2 lg:w-4/12 w-full gap-4">
 
-                    <SelectInput label="All Categories" options={[]} name="category" value={params?.category} />
+                    <CustomSelect icon="/icons/filter.svg" label={params?.category} onChange={(value) => setParams({ ...params, category: value })} value={params?.category} options={categories} />
 
-                    <SelectInput label="" options={sortOptions} name="sort" value={params?.sortBy} />
+                    <CustomSelect label={params?.sortBy} onChange={(value) => setParams({ ...params, sortBy: value })} value={params?.sortBy} options={sortOptions} />
 
                 </div>
 
