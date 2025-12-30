@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+*{
+    font-family: "Arimo", sans-serif;
+}
+
+.debug{
+    @apply border border-red-500
+}
+
+button{
+    @apply cursor-pointer
+}
