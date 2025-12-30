@@ -1,68 +1,30 @@
-// src/hooks/useProducts.ts
+import { useState, useEffect } from "react";
 
-import { useState, useEffect } from 'react';
-
-interface Product {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
-  stock: number;
-  brand: string;
-  category: string;
-  thumbnail: string;
-  images: string[];
-}
-
-interface ProductsResponse {
-  products: Product[];
-  total: number;
-  skip: number;
-  limit: number;
-}
-
-interface UseProductsParams {
-  limit?: number;
-  skip?: number;
-  select?: string;
-}
-
-interface UseProductsReturn {
-  data: ProductsResponse | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
-}
-
-export const useProducts = (params: UseProductsParams = {}): UseProductsReturn => {
-  const [data, setData] = useState<ProductsResponse | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+export const useProducts = (params = {}) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const queryString = new URLSearchParams(
-        params as Record<string, string>
-      ).toString();
-      const url = queryString 
-        ? `https://dummyjson.com/products?${queryString}` 
-        : 'https://dummyjson.com/products';
-      
+
+      // const queryString = new URLSearchParams(params).toString();
+      const url = params
+        ? `https://dummyjson.com/products/search?q=${params?.search}`
+        : "https://dummyjson.com/products";
+
       const response = await fetch(url);
-      
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error("Failed to fetch products");
       }
-      
-      const result: ProductsResponse = await response.json();
+
+      const result = await response.json();
       setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch products');
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -72,9 +34,7 @@ export const useProducts = (params: UseProductsParams = {}): UseProductsReturn =
     fetchProducts();
   }, [JSON.stringify(params)]);
 
-  const refetch = () => {
-    fetchProducts();
-  };
+  const refetch = () => fetchProducts();
 
   return { data, loading, error, refetch };
 };

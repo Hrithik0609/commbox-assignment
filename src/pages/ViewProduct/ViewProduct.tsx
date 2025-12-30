@@ -1,19 +1,32 @@
-import React, { useState } from 'react'
-import Rating from '../../components/Rating'
-import Accordion from '../../components/Accordion'
+import { useState } from 'react';
+import Rating from '../../components/Rating';
+import { useProduct } from '../../api/useProduct';
+import Accordion from '../../components/Accordion';
+import { useNavigate, useParams } from 'react-router-dom';
+import moment from 'moment';
 
 const ViewProduct = () => {
 
   const [activeIndex, setActiveIndex] = useState(0)
 
-  const handleToggle = (index) => {
-    setActiveIndex(index)
+  const navigate = useNavigate()
+
+  const { id } = useParams<{ id: string }>();
+
+  const { data, loading } = useProduct(id);
+
+  if (loading) {
+    return (
+      <div className='flex flex-col items-center justify-center w-full h-screen'>
+        Loading...
+      </div>
+    )
   }
 
   return (
     <div className='flex flex-col w-full min-h-screen lg:py-8 lg:px-12 py-6 px-6 lg:gap-8 gap-6'>
 
-      <button className='flex items-center gap-4 w-fit'>
+      <button onClick={() => navigate(-1)} className='flex items-center gap-4 w-fit'>
         <img src="/icons/back.svg" alt="back" className='w-4 h-4' />
         <p className='text-sm'>Back to Products</p>
       </button>
@@ -21,56 +34,73 @@ const ViewProduct = () => {
       <div className='flex lg:flex-row flex-col w-full lg:gap-8 gap-6'>
 
         <div className='flex flex-col lg:w-6/12 w-full lg:h-184 h-96 bg-[#F3F4F6] rounded-xl'>
-
+          <img src={data?.thumbnail} alt="product-image" className='w-full h-full object-cover' />
         </div>
 
         <div className='flex flex-col lg:w-6/12 w-full gap-6'>
 
           <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-2'>
-              <span className='bg-[#ECEEF2] py-1.5 px-3 rounded-lg text-xs text-[#030213]'>Category</span>
-              <span className='bg-black py-1.5 px-3 rounded-lg text-xs text-white'>In Stock</span>
+              <span className='bg-[#ECEEF2] py-1.5 px-3 rounded-lg text-xs text-[#030213]'>{data?.category}</span>
+              <span className='bg-black py-1.5 px-3 rounded-lg text-xs text-white'>{data?.availabilityStatus}</span>
             </div>
 
-            <h2 className='text-base text-[#0A0A0A]'>Stainless Steel Water Bottle</h2>
+            <h2 className='text-base text-[#0A0A0A]'>{data?.title}</h2>
 
             <p className='text-[#4A5565] text-base'>
-              Insulated water bottle that keeps drinks cold for 24 hours or hot for 12 hours. BPA-free and eco-friendly.
+              {data?.description}
             </p>
           </div>
 
-          <Rating />
+          <Rating value={data?.rating} />
 
           <div className='flex flex-col'>
             <p className='text-[#4A5565] text-sm'>Price</p>
-            <p className='lg:text-4xl text-2xl text-[#0A0A0A]'>$29.99</p>
+            <p className='lg:text-4xl text-2xl text-[#0A0A0A]'>${data?.price}</p>
           </div>
 
           <div className='flex flex-col py-6 border-y border-[#0000001A] gap-6'>
 
             <div className='grid grid-cols-2 gap-4'>
 
-              {
-                [...Array(5)].map((item) => (
-                  <div className='flex flex-col gap-0.5'>
-                    <p className='text-sm text-[#4A5565]'>Brand</p>
-                    <p className='text-base text-[#0A0A0A]'>HydroLife</p>
-                  </div>
-                ))
-              }
+              <div className='flex flex-col gap-0.5'>
+                <p className='text-sm text-[#4A5565]'>Brand</p>
+                <p className='text-base text-[#0A0A0A]'>{data?.brand}</p>
+              </div>
+
+              <div className='flex flex-col gap-0.5'>
+                <p className='text-sm text-[#4A5565]'>SKU</p>
+                <p className='text-base text-[#0A0A0A]'>{data?.sku}</p>
+              </div>
+
+              <div className='flex flex-col gap-0.5'>
+                <p className='text-sm text-[#4A5565]'>Stock</p>
+                <p className='text-base text-[#0A0A0A]'>{data?.stock}</p>
+              </div>
+
+              <div className='flex flex-col gap-0.5'>
+                <p className='text-sm text-[#4A5565]'>Weight</p>
+                <p className='text-base text-[#0A0A0A]'>{data?.weight}g</p>
+              </div>
+
+              <div className='flex flex-col gap-0.5'>
+                <p className='text-sm text-[#4A5565]'>Dimensions</p>
+                <p className='text-base text-[#0A0A0A]'>{data?.dimensions?.width} x {data?.dimensions?.height} x {data?.dimensions?.depth} </p>
+              </div>
 
             </div>
 
             <div className=' flex flex-col gap-2'>
               <p>Tags</p>
               <div className='flex items-center gap-2'>
-                <span className='p-1.5 rounded-lg border border-[#0000001A] text-xs'>
-                  bottle
-                </span>
+                {
+                  data?.tags?.map(item => (
+                    <span className='p-1.5 rounded-lg border border-[#0000001A] text-xs'>
+                      {item}
+                    </span>
+                  ))
+                }
 
-                <span className='p-1.5 rounded-lg border border-[#0000001A] text-xs'>
-                  insulated
-                </span>
               </div>
 
             </div>
@@ -114,11 +144,25 @@ const ViewProduct = () => {
 
         <div>
           {
-            [...Array(3)].map((item, index) => (
+            [
+              {
+                title: 'Warranty Information',
+                description: data?.warrantyInformation
+              },
+              {
+                title: 'Shipping Information',
+                description: data?.shippingInformation
+              },
+              {
+                title: 'Return Policy',
+                description: data?.returnPolicy
+              },
+            ].map((item, index) => (
               <Accordion
                 show={index === activeIndex}
                 handleToggle={() => setActiveIndex(index)}
-                data={{ title: 'Something', description: 'Ullamco aliqua cupidatat cupidatat non occaecat est culpa velit aliquip ullamco dolore.' }}
+                data={item}
+              // data={{ title: 'Something', description: 'Ullamco aliqua cupidatat cupidatat non occaecat est culpa velit aliquip ullamco dolore.' }}
               />
             ))
           }
@@ -131,18 +175,25 @@ const ViewProduct = () => {
         <h2 className='text-base text-[#0A0A0A]'>Customer Reviews</h2>
 
         {
-          [...Array(4)].map(item => (
+          data?.reviews.map(item => (
             <div className='flex flex-col p-6 gap-5 w-full border border-[#0000001A] rounded-[10px]'>
 
-              <div className='flex flex-col gap-0.5'>
+              <div className='flex items-center justify-between w-full'>
+                <div className='flex flex-col gap-0.5'>
 
-                <p className='text-base text-[#0A0A0A]'>John Doe</p>
-                <p className='text-xs text-[#4A5565]'>lisa.a@example.com</p>
+                  <p className='text-base text-[#0A0A0A]'>{item?.reviewerName}</p>
+                  <p className='text-xs text-[#4A5565]'>{item?.reviewerEmail}</p>
 
+                </div>
+
+                <div className='flex flex-col gap-0.5'>
+                  <Rating value="" />
+                  <p className='text-base text-[#4A5565]'>{moment(item?.date).format('LL')}</p>
+                </div>
               </div>
 
               <p className='text-[#364153] text-base'>
-                Keeps my coffee hot all morning!
+                {item?.comment}
               </p>
 
             </div>
