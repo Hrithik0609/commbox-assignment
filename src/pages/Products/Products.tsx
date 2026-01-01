@@ -55,8 +55,8 @@ const sortOptions = [
         value: 'Price: Low to High'
     },
     {
-        label: 'Price: Hight to Low',
-        value: 'Price: Hight to Low'
+        label: 'Price: High to Low',
+        value: 'Price: High to Low'
     },
 ]
 
