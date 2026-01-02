@@ -1,9 +1,57 @@
 import { useState, useEffect } from "react";
 
-export const useProducts = (params = {}) => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+type DimensionTypes = {
+  width: number,
+  height: number,
+  depth: number,
+}
+
+type ReviewsTypes = {
+  comment: string,
+  date: string,
+  rating: number,
+  reviewerEmail: string,
+  reviewerName: string
+}
+
+type ProductDataTypes = {
+  id: number,
+  thumbnail: string,
+  category: string,
+  availabilityStatus: string,
+  title: string,
+  description: string,
+  rating: number,
+  price: number,
+  brand: string,
+  sku: string,
+  stock: number,
+  weight: number,
+  dimensions: DimensionTypes,
+  tags: Array<string>,
+  reviews: ReviewsTypes[],
+  warrantyInformation: string,
+  shippingInformation: string,
+  returnPolicy: string
+}
+
+type DataTypes = {
+  products: ProductDataTypes[],
+  limit: number,
+  skip: number,
+  total: number
+}
+
+type ParamsTypes = {
+  search?: string,
+  category?: string,
+  sortBy?: string,
+}
+
+export const useProducts = (params: ParamsTypes) => {
+  const [data, setData] = useState<DataTypes>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>();
 
   const fetchProducts = async () => {
     try {
@@ -23,8 +71,9 @@ export const useProducts = (params = {}) => {
 
       const result = await response.json();
       setData(result);
-    } catch (err) {
-      setError(err.message || "Something went wrong");
+    } catch (error) {
+      console.log(error, 'error')
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }

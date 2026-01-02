@@ -1,19 +1,19 @@
+import moment from 'moment';
 import { useState } from 'react';
 import Rating from '../../components/Rating';
 import { useProduct } from '../../api/useProduct';
 import Accordion from '../../components/Accordion';
 import { useNavigate, useParams } from 'react-router-dom';
-import moment from 'moment';
 
 const ViewProduct = () => {
 
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [activeIndex, setActiveIndex] = useState<number>(0)
 
   const navigate = useNavigate()
 
   const { id } = useParams<{ id: string }>();
 
-  const { data, loading } = useProduct(id);
+  const { data, loading } = useProduct(id!);
 
   if (loading) {
     return (
@@ -147,22 +147,21 @@ const ViewProduct = () => {
             [
               {
                 title: 'Warranty Information',
-                description: data?.warrantyInformation
+                description: data?.warrantyInformation || ''
               },
               {
                 title: 'Shipping Information',
-                description: data?.shippingInformation
+                description: data?.shippingInformation || ''
               },
               {
                 title: 'Return Policy',
-                description: data?.returnPolicy
+                description: data?.returnPolicy || ''
               },
             ].map((item, index) => (
               <Accordion
+                data={item}
                 show={index === activeIndex}
                 handleToggle={() => setActiveIndex(index)}
-                data={item}
-              // data={{ title: 'Something', description: 'Ullamco aliqua cupidatat cupidatat non occaecat est culpa velit aliquip ullamco dolore.' }}
               />
             ))
           }

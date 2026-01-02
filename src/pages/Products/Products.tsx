@@ -60,15 +60,29 @@ const sortOptions = [
     },
 ]
 
+type ParamsTypes = {
+    search: string,
+    category: string,
+    sortBy: string
+}
+
+type ProductDataType = {
+    id: number,
+    price: number,
+    title: string,
+    rating: number,
+    thumbnail: string,
+}
+
 const Products = () => {
 
-    const [params, setParams] = useState(initialParams)
+    const [params, setParams] = useState<ParamsTypes>(initialParams)
 
     const { data, loading } = useProducts(params);
 
-    console.log(data, 'datassss')
+    console.log(data,'datasss')
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target
         setParams({
             ...params,
@@ -106,9 +120,9 @@ const Products = () => {
 
                 <div className="grid lg:grid-cols-2 lg:w-4/12 w-full gap-4">
 
-                    <CustomSelect icon="/icons/filter.svg" label={params?.category} onChange={(value) => setParams({ ...params, category: value })} value={params?.category} options={categories} />
+                    <CustomSelect icon="/icons/filter.svg" label={params?.category} onChange={(value: string) => setParams({ ...params, category: value })} value={params?.category} options={categories} />
 
-                    <CustomSelect label={params?.sortBy} onChange={(value) => setParams({ ...params, sortBy: value })} value={params?.sortBy} options={sortOptions} />
+                    <CustomSelect label={params?.sortBy} onChange={(value: string) => setParams({ ...params, sortBy: value })} value={params?.sortBy} options={sortOptions} />
 
                 </div>
 
@@ -120,7 +134,7 @@ const Products = () => {
 
                 <div className="grid lg:grid-cols-4 gap-6">
                     {
-                        data?.products?.map((item) => (
+                        data?.products?.map((item: ProductDataType) => (
                             <ProductCard data={item} />
                         ))
                     }

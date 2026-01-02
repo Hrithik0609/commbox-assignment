@@ -1,7 +1,19 @@
 import Rating from './Rating';
 import { useNavigate } from 'react-router-dom';
 
-const ProductCard = ({ data }) => {
+type ProductDataType = {
+    id: number,
+    price: number,
+    title: string,
+    rating: number,
+    thumbnail: string,
+}
+
+type ProductCardTypes = {
+    data: ProductDataType
+}
+
+const ProductCard = ({ data }: ProductCardTypes) => {
     const navigate = useNavigate()
 
     const handleNavigation = () => {

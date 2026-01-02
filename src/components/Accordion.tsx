@@ -1,6 +1,17 @@
 import React from 'react'
 
-const Accordion = ({ data, show, handleToggle }) => {
+type AccordionData = {
+    title: string,
+    description: string
+}
+
+type AccordionTypes = {
+    data: AccordionData,
+    show: boolean,
+    handleToggle: React.MouseEventHandler<HTMLDivElement>
+}
+
+const Accordion = ({ data, show, handleToggle }: AccordionTypes) => {
     return (
         <div className='flex flex-col w-full gap-4 py-4 border-b border-[#0000001A]'>
 

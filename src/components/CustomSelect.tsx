@@ -1,18 +1,37 @@
 import { useEffect, useRef, useState } from 'react'
 
+type OptionsTypes = {
+    label: string,
+    value: string
+}
+
+type ChangeFunctionType = (value: string) => void
+
+type CustomSelectTypes = {
+    options: OptionsTypes[],
+    icon?: string,
+    value: string,
+    onChange: ChangeFunctionType,
+    label: string
+}
+
 const CustomSelect = ({
     options = [],
     icon,
     value,
     onChange,
     label = 'Select option'
-}) => {
+}: CustomSelectTypes) => {
     const [open, setOpen] = useState(false)
-    const ref = useRef(null)
+    const ref = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (ref.current && !ref.current.contains(e.target)) {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                ref.current &&
+                e.target instanceof Node &&
+                !ref.current.contains(e.target)
+            ) {
                 setOpen(false)
             }
         }
@@ -49,7 +68,7 @@ const CustomSelect = ({
 
             {open && (
                 <div className="absolute top-[120%] left-0 w-full bg-white rounded-lg shadow p-1 z-10">
-                    {options.map(option => (
+                    {options.map((option: OptionsTypes) => (
                         <button
                             key={option.value}
                             onClick={() => {
