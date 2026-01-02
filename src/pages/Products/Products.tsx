@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useProducts } from "../../api/useProducts";
-import Pagination from "../../components/Pagination";
 import ProductCard from "../../components/ProductCard";
 import CustomSelect from "../../components/CustomSelect";
 
@@ -141,8 +140,6 @@ const Products = () => {
                 </div>
 
             </div>
-
-            <Pagination />
 
         </div>
     )
