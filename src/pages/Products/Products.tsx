@@ -1,68 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useProducts } from "../../api/useProducts";
 import ProductCard from "../../components/ProductCard";
 import CustomSelect from "../../components/CustomSelect";
+import Pagination from "../../components/Pagination";
 
 const initialParams = {
     search: '',
-    category: 'All Categories',
-    sortBy: 'Price: Low to High'
+    category: '',
+    sortBy: 'asc',
+    limit: 30
 }
 
-const categories = [
-    {
-        label: 'All Categories',
-        value: 'All Categories'
-    },
-    {
-        label: 'Electronics',
-        value: 'Electronics'
-    },
-    {
-        label: 'Furniture',
-        value: 'Furniture'
-    },
-    {
-        label: 'Home & Kitchen',
-        value: 'Home & Kitchen'
-    },
-    {
-        label: 'Photography',
-        value: 'Photography'
-    },
-    {
-        label: 'Sports',
-        value: 'Sports'
-    },
-    {
-        label: 'Bags',
-        value: 'Bags'
-    },
-]
-
 const sortOptions = [
-    {
-        label: 'Newest',
-        value: 'Newest'
-    },
-    {
-        label: 'Oldest',
-        value: 'Oldest'
-    },
+    // {
+    //     label: 'Newest',
+    //     value: 'Newest'
+    // },
+    // {
+    //     label: 'Oldest',
+    //     value: 'Oldest'
+    // },
     {
         label: 'Price: Low to High',
-        value: 'Price: Low to High'
+        value: 'asc'
     },
     {
         label: 'Price: High to Low',
-        value: 'Price: High to Low'
+        value: 'desc'
     },
 ]
 
 type ParamsTypes = {
     search: string,
     category: string,
-    sortBy: string
+    sortBy: string,
+    limit: number
 }
 
 type ProductDataType = {
@@ -75,11 +47,34 @@ type ProductDataType = {
 
 const Products = () => {
 
+    // const [limit, setLimit] = useState(10)
+
     const [params, setParams] = useState<ParamsTypes>(initialParams)
 
     const { data, loading } = useProducts(params);
 
-    console.log(data,'datasss')
+    const [categories, setCategories] = useState([])
+    console.log(categories, 'categories')
+
+    async function getAllCategories() {
+        const response = await fetch('https://dummyjson.com/products/categories')
+        try {
+            if (!response) {
+                throw new Error('Something went wrong')
+            }
+            const data = await response.json()
+            let temp = []
+            data?.map((item) => {
+                temp.push({ label: item?.name, value: item?.slug })
+            })
+            setCategories(temp)
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
+    console.log(data, 'datasss')
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -89,13 +84,38 @@ const Products = () => {
         })
     }
 
-    if (loading) {
-        return (
-            <div className='flex flex-col items-center justify-center w-full h-screen'>
-                Loading...
-            </div>
-        )
+    const handlePrev = () => {
+        setParams({
+            ...params,
+            limit: params.limit - 10
+        })
     }
+
+    const handleNext = () => {
+        setParams({
+            ...params,
+            limit: params.limit + 10
+        })
+    }
+
+    const handleSetLimit = (value) => {
+        setParams({
+            ...params,
+            limit: value
+        })
+    }
+
+    useEffect(() => {
+        getAllCategories()
+    }, [])
+
+    // if (loading) {
+    //     return (
+    //         <div className='flex flex-col items-center justify-center w-full h-screen'>
+    //             Loading...
+    //         </div>
+    //     )
+    // }
 
     return (
         <div className='flex flex-col w-full min-h-screen lg:py-8 lg:px-12 py-6 px-6 lg:gap-8 gap-6'>
@@ -119,7 +139,7 @@ const Products = () => {
 
                 <div className="grid lg:grid-cols-2 lg:w-4/12 w-full gap-4">
 
-                    <CustomSelect icon="/icons/filter.svg" label={params?.category} onChange={(value: string) => setParams({ ...params, category: value })} value={params?.category} options={categories} />
+                    <CustomSelect icon="/icons/filter.svg" label={params?.category || 'All Categories'} onChange={(value: string) => setParams({ ...params, category: value })} value={params?.category} options={categories} />
 
                     <CustomSelect label={params?.sortBy} onChange={(value: string) => setParams({ ...params, sortBy: value })} value={params?.sortBy} options={sortOptions} />
 
@@ -129,7 +149,7 @@ const Products = () => {
 
             <div className="flex flex-col gap-4 w-full">
 
-                <p className="text-sm text-[#4A5565]">Showing 8 of 12 products</p>
+                <p className="text-sm text-[#4A5565]">Showing {params?.limit} of {data?.total} products</p>
 
                 <div className="grid lg:grid-cols-4 gap-6">
                     {
@@ -140,6 +160,14 @@ const Products = () => {
                 </div>
 
             </div>
+
+            <Pagination
+                page={params?.limit}
+                total={data?.total}
+                handlePrev={handlePrev}
+                handleNext={handleNext}
+                handleSetLimit={handleSetLimit}
+            />
 
         </div>
     )

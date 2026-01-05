@@ -46,6 +46,7 @@ type ParamsTypes = {
   search?: string,
   category?: string,
   sortBy?: string,
+  limit?: number
 }
 
 export const useProducts = (params: ParamsTypes) => {
@@ -58,10 +59,15 @@ export const useProducts = (params: ParamsTypes) => {
       setLoading(true);
       setError(null);
 
+      const baseUrl = "https://dummyjson.com/products"
+
       // const queryString = new URLSearchParams(params).toString();
-      const url = params
-        ? `https://dummyjson.com/products/search?q=${params?.search}`
-        : "https://dummyjson.com/products";
+      const url = params?.search
+        ? `${baseUrl}/search?q=${params?.search}&skip=${params?.limit}`
+        : params?.category !== '' ? `${baseUrl}/category/${params?.category}?skip=${params?.limit}` :
+          params?.sortBy ? `${baseUrl}/?sortBy=price&order=${params?.sortBy}&skip=${params?.limit}` :
+            (baseUrl + `?skip=${params?.limit}`)
+        ;
 
       const response = await fetch(url);
 

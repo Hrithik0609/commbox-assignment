@@ -67,7 +67,7 @@ const CustomSelect = ({
             </button>
 
             {open && (
-                <div className="absolute top-[120%] left-0 w-full bg-white rounded-lg shadow p-1 z-10">
+                <div className="absolute top-[120%] left-0 w-full bg-white rounded-lg shadow p-1 z-10 max-h-52 overflow-y-auto">
                     {options.map((option: OptionsTypes) => (
                         <button
                             key={option.value}
