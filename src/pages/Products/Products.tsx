@@ -54,6 +54,7 @@ const Products = () => {
     const { data, loading } = useProducts(params);
 
     const [categories, setCategories] = useState([])
+
     console.log(categories, 'categories')
 
     async function getAllCategories() {
@@ -85,17 +86,21 @@ const Products = () => {
     }
 
     const handlePrev = () => {
-        setParams({
-            ...params,
-            limit: params.limit - 10
-        })
+        if (params?.limit > 30) {
+            setParams({
+                ...params,
+                limit: params.limit - 30
+            })
+        }
     }
 
     const handleNext = () => {
-        setParams({
-            ...params,
-            limit: params.limit + 10
-        })
+        if (params?.limit <= data?.total) {
+            setParams({
+                ...params,
+                limit: params.limit + 30
+            })
+        }
     }
 
     const handleSetLimit = (value) => {
